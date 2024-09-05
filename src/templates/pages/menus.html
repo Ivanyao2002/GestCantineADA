@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Liste des menus</title>
+{% endblock title %}
+
+
+{% block container %}
+
+  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="alert-success" style="color: white;">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
+      <div class="container-fluid py-1 px-3">
+
+
+        <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+          <ul class="navbar-nav  justify-content-start">
+            <li class="nav-item d-flex align-items-center">
+              <a class="btn btn-outline-warning btn-sm mb-0 me-3" href="{% url 'canteen:menu_add' %}">Ajouter un menu</a>
+            </li>
+          </ul>
+          <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+              <form method="GET">
+              <div class="input-group input-group-outline">
+                <!-- <label class="form-label"></label> -->
+                <input type="text" name="search_field" value="{{ search_field }}" class="form-control" placeholder="Recherche par nom de plat">
+              </div>
+            </div>
+            <ul class="navbar-nav  justify-content-end">
+              <li class="nav-item d-flex align-items-center">
+                <button class="btn btn-outline-primary btn-sm mb-0 me-3">Recherche</button>
+              </li>
+            </ul>
+        </form>
+        </div>
+      </div>
+    </nav>
+    <!-- End Navbar -->
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div class="bg-gradient-warning shadow-primary border-radius-lg pt-4 pb-3">
+                <h6 class="text-white text-capitalize ps-3">Liste des menus ({{ numbers_menus }})</h6>
+              </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+              <div class="table-responsive p-0">
+                <table class="table align-items-center mb-0">
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Plat</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2 align-items-center"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for menu in menus  %}
+                    
+                      <tr>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm">{{ menu.created_at|date:"D d M Y" }}</h6>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="d-flex px-2 py-1">
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm">{{ menu.flat|capfirst }}</h6>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                          <button class="badge badge-sm bg-gradient-success">
+                            <a href="{% url 'canteen:menu_edit' menu.id  %}">
+                              <i class="fa fa-edit"></i>
+                            </a>
+                          </button>
+                          <button class="badge badge-sm bg-gradient-danger" data-id="{{menu.id}}" onclick="showModal(this)">
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>  
+
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="footer py-4  ">
+        <div class="container-fluid">
+          <div class="row align-items-center justify-content-lg-between">
+            <div class="col-lg-6 mb-lg-0 mb-4">
+              <div class="copyright text-center text-sm text-muted text-lg-start">
+                © <script>
+                  document.write(new Date().getFullYear())
+                </script>
+                ADA
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+        <h2>ATTENTION !!</h2>
+        <p>Voulez-vous vraiment supprimer ce menu ?</p>
+        <button onclick="closeModal()">Non</button>
+        <button onclick="confirmDelete()">Oui</button>
+    </div>
+</div>
+          
+{% endblock container %}
+
+{% block scripts %}
+
+  <script>
+    let Id;
+
+    function showModal(buttonElement) {
+        Id = buttonElement.getAttribute('data-id');  
+        document.getElementById('modal').style.display = 'flex';  
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';     
+    }
+
+    function confirmDelete() {
+        closeModal();
+        window.location.href = "{% url 'canteen:menu_delete' 0 %}".replace(0, Id);
+    }
+  </script>
+  
+{% endblock scripts %}
